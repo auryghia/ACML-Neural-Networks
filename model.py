@@ -3,30 +3,27 @@ from parameters import *
 
 
 class NeuralNetwork:
-    def __init__(self, layers: list = LAYERS, l: float = LAMBDA):
+
+    def __init__(
+        self,
+    ):
         self.weights = []
         self.activations = []
-        self.layers = layers
         self.deltas = []
         self.D = []
-        self.l = l
 
     def init_weights(self):
-        for layer_idx in range(len(self.layers) - 1):
+        for layer_idx in range(len(LAYERS) - 1):
 
             self.weights.append(
-                np.random.rand(self.layers[layer_idx + 1], self.layers[layer_idx] + 1)
+                np.random.rand(LAYERS[layer_idx + 1], LAYERS[layer_idx] + 1)
             )
-            self.deltas.append(
-                np.zeros((self.layers[layer_idx + 1], self.layers[layer_idx] + 1))
-            )
-            self.D.append(
-                np.zeros((self.layers[layer_idx + 1], self.layers[layer_idx] + 1))
-            )
+            self.deltas.append(np.zeros((LAYERS[layer_idx + 1], LAYERS[layer_idx] + 1)))
+            self.D.append(np.zeros((LAYERS[layer_idx + 1], LAYERS[layer_idx] + 1)))
 
     def forward(self, x):
         self.activations.append(x)
-        for layer_idx in range(len(self.layers) - 1):
+        for layer_idx in range(len(LAYERS) - 1):
             self.activations[layer_idx] = np.insert(self.activations[layer_idx], 0, 1)
             a = self.sigmoid(
                 np.dot(self.weights[layer_idx], self.activations[layer_idx])
@@ -48,7 +45,7 @@ class NeuralNetwork:
         gamma = self.init_gamma(y)
         gammas = [gamma]
 
-        for layer_idx in range(len(self.layers) - 2, 0, -1):
+        for layer_idx in range(len(LAYERS) - 2, 0, -1):
             self.activations[layer_idx] = np.insert(self.activations[layer_idx], 0, 1)
 
             gamma = (
@@ -58,8 +55,8 @@ class NeuralNetwork:
             )
             gammas.append(gamma)
 
-            for row in range(self.layers[layer_idx + 1]):
-                for col in range(self.layers[layer_idx] + 1):
+            for row in range(LAYERS[layer_idx + 1]):
+                for col in range(LAYERS[layer_idx] + 1):
                     self.deltas[layer_idx][row, col] = (
                         self.deltas[layer_idx][row, col]
                         + self.activations[layer_idx][col] * gammas[-2][row]
@@ -72,7 +69,7 @@ class NeuralNetwork:
                     else:
                         self.D[layer_idx][row, col] = (
                             self.deltas[layer_idx][row, col]
-                            + self.l * self.weights[layer_idx][row, col]
+                            + LAMBDA * self.weights[layer_idx][row, col]
                         ) / len(X)
 
         if layer_idx > 0:
