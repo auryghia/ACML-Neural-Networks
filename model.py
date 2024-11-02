@@ -83,12 +83,4 @@ class NeuralNetwork:
             self.forward(X[i])
             self.backpropagation(X[i], X[i])
 
-
-from utils import data
-
-
-data = data()
-nn = NeuralNetwork()
-nn.init_weights()
-
-print(nn.train(data))
+            # not finished
