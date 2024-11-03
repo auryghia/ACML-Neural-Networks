@@ -76,6 +76,17 @@ class NeuralNetwork:
                         self.deltas[layer_idx][row, col]
                         + self.activations[layer_idx][col] * gammas[-2][row]
                     )
+
+        if layer_idx > 0:
+            self.activations[layer_idx] = self.activations[layer_idx][1:]
+
+    def compute_D(self, X):
+        for layer_idx in range(len(self.layers) - 1):
+
+            for row in range(self.layers[layer_idx + 1]):
+
+                for col in range(self.layers[layer_idx] + 1):
+
                     if col == 0:
                         self.D[layer_idx][row, col] = self.deltas[layer_idx][
                             row, col
@@ -92,17 +103,18 @@ class NeuralNetwork:
                             self.alpha * self.D[layer_idx][row, col]
                         )
 
-        if layer_idx > 0:
-            self.activations[layer_idx] = self.activations[layer_idx][1:]
-
-    def train(self, X):
+    def train(self, X, batch_size=8):
         for epoch in range(self.epochs):
             total_loss = 0
-            for i in range(len(X)):
+            index = np.random.permutation(len(X))
+            X = X[index]
+            for i in range(batch_size):
                 self.forward(X[i])
                 self.backpropagation(X[i], X[i])
-                loss = np.mean((self.activations[-1] - X[i]) ** 2)  # Mean Squared Error
+                loss = np.mean((self.activations[-1] - X[i]) ** 2)
                 total_loss += loss
-                self.average_loss = total_loss / len(X)
 
+            self.compute_D(X)
+            self.average_loss = total_loss / batch_size
             self.average_losses.append(self.average_loss)
+            print(f"Epoch {epoch + 1}/{EPOCHS}, Loss: {self.average_loss}")
