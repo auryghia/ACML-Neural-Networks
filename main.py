@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 weights = nn.weights
+activations = nn.activations
 
 
 def plot_weights(weights):

@@ -106,4 +106,3 @@ class NeuralNetwork:
                 self.average_loss = total_loss / len(X)
 
             self.average_losses.append(self.average_loss)
-            print(f"Epoch {epoch + 1}/{EPOCHS}, Loss: {self.average_loss}")
