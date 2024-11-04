@@ -85,7 +85,7 @@ class NeuralNetwork:
         if layer_idx > 0:
             self.activations[layer_idx] = self.activations[layer_idx][1:]
 
-    def compute_D(self, X):
+    def modify_weights(self, batch_size):
         for layer_idx in range(len(self.layers) - 1):
 
             for row in range(self.layers[layer_idx + 1]):
@@ -93,9 +93,9 @@ class NeuralNetwork:
                 for col in range(self.layers[layer_idx] + 1):
 
                     if col == 0:
-                        self.D[layer_idx][row, col] = self.deltas[layer_idx][
-                            row, col
-                        ] / len(X)
+                        self.D[layer_idx][row, col] = (
+                            self.deltas[layer_idx][row, col] / batch_size
+                        )
                         self.weights[layer_idx][row, col] -= (
                             self.alpha * self.D[layer_idx][row, col]
                         )
@@ -103,7 +103,7 @@ class NeuralNetwork:
                         self.D[layer_idx][row, col] = (
                             self.deltas[layer_idx][row, col]
                             + self.lambd * self.weights[layer_idx][row, col]
-                        ) / len(X)
+                        ) / batch_size
                         self.weights[layer_idx][row, col] -= (
                             self.alpha * self.D[layer_idx][row, col]
                         )
@@ -122,7 +122,7 @@ class NeuralNetwork:
                 loss = np.mean((self.activations[-1] - X[i]) ** 2)
                 total_loss += loss
 
-            self.compute_D(X)
+            self.modify_weights(batch_size)
             self.average_loss = total_loss / batch_size
             self.average_losses.append(self.average_loss)
 
