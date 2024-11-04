@@ -1,5 +1,6 @@
 import numpy as np
 from parameters import *
+import time
 
 
 class NeuralNetwork:
@@ -24,19 +25,23 @@ class NeuralNetwork:
 
     def init_weights(self):
         for layer_idx in range(len(self.layers) - 1):
-
             self.weights.append(
                 np.random.rand(self.layers[layer_idx + 1], self.layers[layer_idx] + 1)
             )
+
+    def init_deltas_D(self):
+        for layer_idx in range(len(self.layers) - 1):
             self.deltas.append(
                 np.zeros((self.layers[layer_idx + 1], self.layers[layer_idx] + 1))
             )
+
+    def init_D(self):
+        for layer_idx in range(len(self.layers) - 1):
             self.D.append(
                 np.zeros((self.layers[layer_idx + 1], self.layers[layer_idx] + 1))
             )
 
     def forward(self, x):
-
         self.activations = [x]
         for layer_idx in range(len(self.layers) - 1):
             self.activations[layer_idx] = np.insert(self.activations[layer_idx], 0, 1)
@@ -104,7 +109,10 @@ class NeuralNetwork:
                         )
 
     def train(self, X, batch_size=8):
+        start_time = time.time()
         for epoch in range(self.epochs):
+            self.init_deltas_D()
+            self.init_D()
             total_loss = 0
             index = np.random.permutation(len(X))
             X = X[index]
@@ -117,4 +125,8 @@ class NeuralNetwork:
             self.compute_D(X)
             self.average_loss = total_loss / batch_size
             self.average_losses.append(self.average_loss)
-            print(f"Epoch {epoch + 1}/{EPOCHS}, Loss: {self.average_loss}")
+
+        end_time = time.time()
+        print(
+            f"Training Time: {end_time - start_time}, Loss: {self.average_loss}, Learning Rate: {self.alpha}, Regolation Term: {self.lambd}, Batch Size: {batch_size}"
+        )
