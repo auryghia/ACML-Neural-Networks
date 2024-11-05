@@ -12,6 +12,7 @@ nn.train(data, batch_size=8)
 
 import seaborn as sns
 
+print(nn.weights)
 weights = nn.weights
 activations = nn.activations
 
@@ -32,6 +33,8 @@ def objective(trial):
     return nn.average_losses[-1]
 
 
+"""
+
 study = optuna.create_study(direction="minimize")
 study.optimize(objective, n_trials=100)
 
@@ -42,12 +45,12 @@ best_params = study.best_params
 best_nn = NeuralNetwork(alpha=best_params["alpha"], lambd=best_params["lambda"])
 best_nn.init_weights()
 best_nn.train(data, batch_size=best_params["batch_size"])
+"""
 
 plt.figure(figsize=(12, 8))
 plt.plot(
-    best_nn.average_losses,
+    nn.average_losses,
     color="blue",
-    label=f'Best LAMBDA: {best_params["lambda"]}, ALPHA: {best_params["alpha"]}, BATCH SIZE: {best_params["batch_size"]}',
 )
 plt.title("Average Losses Over Epochs for Best Parameter Configuration", fontsize=16)
 plt.xlabel("Epochs", fontsize=14)
@@ -59,3 +62,4 @@ plt.xticks(fontsize=12)
 plt.yticks(fontsize=12)
 plt.tight_layout()
 plt.show()
+print(nn.predict(data[1]))
